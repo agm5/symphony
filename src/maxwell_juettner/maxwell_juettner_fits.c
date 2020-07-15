@@ -77,29 +77,28 @@ double maxwell_juettner_V(struct parameters * params)
 {
   double nu_c = get_nu_c(*params);
 
-  double nu_s = (2./9.)*nu_c*sin(params->observer_angle)*params->theta_e
+  double nu_s = (3./2.)*nu_c*sin(params->observer_angle)*params->theta_e
                 *params->theta_e;
 
   double X = params->nu/nu_s;
 
-  double prefactor = (params->electron_density 
-                      * pow(params->electron_charge, 2.) 
-                      * nu_c)/params->speed_light;
-
-  double term1 = (37.-87.*sin(params->observer_angle-28./25.))
-                /(100.*(params->theta_e+1.));
-
-  double term2 = pow(1.+(pow(params->theta_e, 3./5.)/25.+7./10.)
-		*pow(X, 9./25.), 5./3.);
-
-  double ans = prefactor*term1*term2*exp(-pow(X, 1./3.));
-
+  double prefactor =  2 * (params->electron_density
+		      * pow(params->electron_charge, 2.))
+                      /(params->speed_light * 3 * pow(3, 0.5));
+	
+  double term1 = params->nu / (pow(params->theta_e, 3)*tan(params->observer_angle));
+	
+  double term2 = ((1.8138 * pow(X, -1.)) +( 3.423 * pow(X, -(2./3.))) +
+                 (0.02955 * pow(X, -(1./2.))) +( 2.0377 * pow(X, -(1./3.))))
+                 *exp(-1.8899 * pow(X, 1./3.));
+	
+  double ans = prefactor*term1*term2;
   /*NOTE: Sign corrected; the sign in Leung et al. (2011)
     and Pandya et al. (2016) for Stokes V transfer coefficients
     does not follow the convention the papers describe (IEEE/IAU);
-    the sign has been corrected here.*/
-  return ans;
-}
+    the sign has been corrected here.*/ 
+  return ans;                                                                                           
+  }
 
 /*planck_func: The Planck function (used in eq. 25 of [1]) can be used to
  *             obtain alpha_nu() fitting formulae from the j_nu() fitting 
